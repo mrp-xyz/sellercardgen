@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Admin - Joy Bakeshop</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="config.js"></script>
+    <!-- ColorThief for color extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="brand-admin">
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs">
+                <button class="nav-tab nav-tab-active" data-tab="logo-processing">Generate</button>
+                <button class="nav-tab" data-tab="automation-logic">Documentation</button>
+                <button class="nav-tab" data-tab="settings">Settings</button>
+            </nav>
+
+            <!-- Header: Brand Info (Top Left) -->
+            <div class="brand-info">
+                <h1 class="brand-name">Joy Bakeshop</h1>
+                <div class="brand-meta">
+                    <span class="brand-handle">$joybakeshop</span>
+                    <span class="meta-divider">·</span>
+                    <span class="brand-category">Bakery</span>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                
+                <!-- Get Started View (Name Entry) - Centered Popup -->
+                <div class="view-container centered-popup-view" id="getStartedView">
+                    <div class="logo-processing-card">
+                        <div class="get-started-content">
+                            <h2 class="get-started-title">Get started</h2>
+                            <p class="get-started-description">Enter your name. This will appear next to the seller cards you create.</p>
+                        </div>
+                        
+                        <div class="name-input-container">
+                            <input 
+                                type="text" 
+                                class="name-input" 
+                                id="userNameInput"
+                                placeholder="Name"
+                            />
+                        </div>
+                        
+                        <button class="get-started-btn" id="getStartedBtn">Continue</button>
+                    </div>
+                </div>
+
+                <!-- Logo Processing View -->
+                <div class="view-container" id="logoProcessingView">
+                    <div class="logo-processing-card">
+                        <div class="logo-processing-header">
+                            <h2 class="logo-processing-title">Generate seller cards</h2>
+                            <button class="logo-processing-close" id="logoProcessingClose" style="display: none;">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Description Text -->
+                        <p class="logo-processing-description">Upload a logo to automatically generate a seller card.<br>Drop in a JPG or PNG under 5MB.</p>
+                        
+                        <!-- Upload Area -->
+                        <div class="logo-upload-area" id="logoUploadArea">
+                            <p class="logo-upload-text">
+                                <span class="text-gray">Drag images here or</span>
+                                <span class="text-underline">upload a file</span>
+                            </p>
+                            <input type="file" id="logoProcessingInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                        
+                        <!-- Validation Error Message -->
+                        <div class="logo-validation-error" id="logoValidationError" style="display: none;"></div>
+                        
+                        <!-- Image Preview Grid -->
+                        <div class="logo-preview-grid" id="logoPreviewGrid" style="display: none;">
+                        </div>
+                        
+                        <!-- Continue Button -->
+                        <div class="logo-continue-container" id="logoContinueContainer" style="display: none;">
+                            <button class="logo-continue-btn" id="logoContinueBtn">Continue</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Brand Details View -->
+                <div class="view-container" id="brandDetailsView">
+                <!-- Left: Card Preview + Buttons -->
+                <div class="preview-section">
+                    <div class="card-preview-container bg-dark">
+                        <div class="seller-card size-xl" id="sellerCard">
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <span class="card-handle">$joybakeshop</span>
+                                    <span class="card-status">Open</span>
+                                </div>
+                                <div class="card-logo" id="cardLogo">
+                                    <span class="logo-text" id="cardLogoMonogram">JB</span>
+                                    <img class="logo-image" id="cardLogoImage" alt="Card Logo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right: Seller Card Creative Sidebar -->
+                <div class="sidebar-section">
+                    <!-- Inner Group: Seller brand identity + Preview -->
+                    <div class="sidebar-inner-group">
+                        <!-- Section Header -->
+                        <div class="section-header">
+                            <h3 class="section-header-title">Seller card preview</h3>
+                        </div>
+
+                        <!-- Logo Section -->
+                    <div class="control-section">
+                        <h3 class="section-sublabel">Logo</h3>
+                        <div class="logo-options">
+                            <div class="logo-preview logo-option" id="logoMonogramOption" data-type="monogram">
+                                <span class="logo-text">JB</span>
+                            </div>
+                            <!-- Uploaded logos will be inserted here -->
+                            <div class="logo-preview logo-option add-logo-option" id="addLogoOption">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <input type="file" id="logoUploadInput" accept="image/*" style="display: none;">
+                    </div>
+
+                    <!-- Brand Color -->
+                    <div class="control-section">
+                        <h3 class="section-sublabel">Brand color</h3>
+                        <div class="color-pill" id="cardColorPill">
+                            <div class="color-dot" id="cardColorDot"></div>
+                            <span class="hex-value" id="cardColorHex" contenteditable="true" spellcheck="false">#B44E0E</span>
+                            <div class="pill-divider"></div>
+                            <span class="opacity-value" id="cardOpacity" contenteditable="true" spellcheck="false">100%</span>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="section-divider"></div>
+
+                    <!-- Preview Section Header -->
+                    <div class="section-header">
+                        <h3 class="section-header-title">Preview</h3>
+                    </div>
+
+                    <!-- Card Size -->
+                    <div class="control-section">
+                        <h3 class="section-sublabel">Card size</h3>
+                        <div class="preview-controls">
+                            <div style="position: relative;">
+                <button class="control-dropdown" id="cardSizeBtn">
+                    <span id="cardSizeLabel">XL</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div class="dropdown-menu" id="cardSizeMenu">
+                    <div class="dropdown-item" data-size="xs">XS</div>
+                    <div class="dropdown-item" data-size="s">S</div>
+                    <div class="dropdown-item" data-size="m">M</div>
+                    <div class="dropdown-item" data-size="l">L</div>
+                    <div class="dropdown-item selected" data-size="xl">XL</div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Background -->
+                    <div class="control-section">
+                        <h3 class="section-sublabel">Background</h3>
+                        <div class="preview-controls">
+                            <div style="position: relative;">
+                <button class="control-dropdown" id="backgroundBtn">
+                    <span id="backgroundLabel">Dark</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                                <div class="dropdown-menu" id="backgroundMenu">
+                                    <div class="dropdown-item" data-background="light">Light</div>
+                                    <div class="dropdown-item" data-background="tab">Tab</div>
+                                    <div class="dropdown-item selected" data-background="dark">Dark</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- End Inner Group -->
+
+                    <!-- Action Buttons -->
+                    <div class="sidebar-buttons">
+                        <button class="sidebar-button sidebar-button-secondary">Reset</button>
+                        <button class="sidebar-button sidebar-button-primary">Save</button>
+                    </div>
+                </div>
+                </div>
+                <!-- End Brand Details View -->
+                
+                <!-- Automation Logic View -->
+                <div class="view-container" id="automationLogicView">
+                    <div class="automation-logic-content">
+                        <h2 class="automation-title">Introduction</h2>
+                        
+                        <!-- Introduction -->
+                        <div class="automation-intro">
+                            <p>The seller card is a visual representation of a seller's brand identity, and a scalable core primitive within the Block ecosystem.</p>
+                            <p>Across Neighborhoods on Cash App, the card follows the buyer from their first impression at the point of sale, through sign-up and activation, and ultimately resolves on the Neighborhoods tab as the foundational entry point to their relationship with that seller.</p>
+                            <p>Within neighborhoods featuring multiple participating sellers, buyers can "collect" seller cards by following businesses in app or at the point of sale.</p>
+                            <p>For established brands, the seller card carries existing brand recognition into the Cash App ecosystem. For emerging brands, it provides an opportunity to build and scale that brand equity within the same network.</p>
+                        </div>
+                        
+                        <h2 class="automation-subtitle">This prototype</h2>
+                        
+                        <!-- How it works -->
+                        <div class="automation-intro">
+                            <p>Automatically converts a seller's logo into a clean, ready-to-use seller card.</p>
+                            <p>The automation:</p>
+                            <ul>
+                                <li>Checks the logo to make sure it's clear and good quality</li>
+                                <li>Cleans up the logo by removing the background and centering it</li>
+                                <li>Picks a background color from your logo's color palette that pairs well with your logo</li>
+                            </ul>
+                        </div>
+                        
+                        <h2 class="automation-subtitle">Automation logic</h2>
+                        
+                        <div class="automation-section">
+                            <h3 class="automation-step-title">Step 0: Logo Validation (Quality Gate)</h3>
+                            <div class="automation-step-content">
+                                <p><strong>What happens:</strong> Before processing, analyzes each image to verify it's actually a logo (not a photo)</p>
+                                <p><strong>Why:</strong> Protects API credits and ensures quality results</p>
+                                <p><strong>API:</strong> None - runs in your browser using Canvas</p>
+                                <p><strong>Technical Requirements (STRICT):</strong></p>
+                                <ul>
+                                    <li><strong>File Format:</strong> Must be JPG or PNG only
+                                        <ul>
+                                            <li>PNG preferred (supports transparency)</li>
+                                            <li>REJECT: SVG, GIF, WebP, HEIF, TIFF, BMP, and all other formats</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Dimensions:</strong> Must be 150-2500 pixels (width or height)
+                                        <ul>
+                                            <li>Minimum: 150x150px (quality threshold)</li>
+                                            <li>Maximum: 2500x2500px (industry standard for digital logos)</li>
+                                            <li>REJECT if too small (< 150px) or too large (> 2500px)</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>File Size:</strong> Must be under 5MB
+                                        <ul>
+                                            <li>Ideal: < 2MB</li>
+                                            <li>Photos are typically larger</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <p><strong>Quality Criteria (Multi-Factor Analysis):</strong></p>
+                                <ul>
+                                    <li><strong>Color Count:</strong> Informational (NOT a hard rejection)
+                                        <ul>
+                                            <li>Modern logos often have gradients/shadows</li>
+                                            <li>Uses 4-bit color reduction (more forgiving)</li>
+                                            <li>Score penalty only, not automatic rejection</li>
+                                            <li>100+ colors: -20 points | 50-100: -10 points</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Complexity (Edge Density):</strong> Stronger signal than color
+                                        <ul>
+                                            <li>Logos: Clean shapes (< 25% edges)</li>
+                                            <li>Photos: High detail (> 55% edges)</li>
+                                            <li>Uses Sobel edge detection algorithm</li>
+                                            <li>55%+: -30 points | 40-55%: -15 points</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>File Efficiency:</strong> KB per 1000 pixels
+                                        <ul>
+                                            <li>Logos compress well (< 0.3 KB/1000px)</li>
+                                            <li>Photos don't (> 0.5 KB/1000px)</li>
+                                            <li>Warning signal, not blocker</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <p><strong>Smart Multi-Factor Rejection:</strong></p>
+                                <ul>
+                                    <li><strong>Hard Blockers</strong> (instant reject): Wrong format, dimensions out of range, file > 5MB</li>
+                                    <li><strong>Soft Signals</strong> (warnings): Color count, edge density, file efficiency</li>
+                                    <li><strong>Rejection Logic:</strong> Only reject if hard blocker OR (score < 30 AND 3+ warnings)</li>
+                                    <li>No single soft criterion rejects alone - must have multiple failures</li>
+                                </ul>
+                                <p><strong>Scoring System (0-100):</strong></p>
+                                <ul>
+                                    <li>80-100: High confidence logo ✓</li>
+                                    <li>60-79: Likely logo ⚠</li>
+                                    <li>40-59: Borderline (still processed)</li>
+                                    <li>30-39: Questionable (rejected only if 3+ warnings)</li>
+                                    <li>0-29: Very low quality ✗</li>
+                                </ul>
+                                <p><strong>Result:</strong></p>
+                                <ul>
+                                    <li>If ACCEPTED: Continues to color extraction</li>
+                                    <li>If REJECTED: Shows specific error (e.g., "Too many colors (78). Logos typically have fewer than 50 colors")</li>
+                                    <li>Saves API credits by catching bad uploads early</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="automation-section">
+                            <h3 class="automation-step-title">Step 1: Color Extraction (ColorThief API)</h3>
+                            <div class="automation-step-content">
+                                <p><strong>What happens:</strong> Analyzes your original uploaded image</p>
+                                <p><strong>API:</strong> ColorThief.js (runs in your browser, no server call)</p>
+                                <p><strong>Process:</strong></p>
+                                <ul>
+                                    <li>Loads your original image (with background still on)</li>
+                                    <li>Scans the entire image and finds the 10 most common colors</li>
+                                    <li>Tests each color for contrast (can you see a logo on this background?)</li>
+                                    <li>Keeps only 5 colors that pass the contrast test</li>
+                                    <li>Stores these 5 colors for later</li>
+                                </ul>
+                                <p><strong>Result:</strong></p>
+                                <ul>
+                                    <li>5 colors that would work well as backgrounds</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="automation-section">
+                            <h3 class="automation-step-title">Step 2: Color Extraction (ColorThief API)</h3>
+                            <div class="automation-step-content">
+                                <p><strong>What happens:</strong> Analyzes the processed logo (after background removal) to extract additional colors</p>
+                                <p><strong>API:</strong> ColorThief.js (runs in your browser, no server call)</p>
+                                <p><strong>Process:</strong></p>
+                                <ul>
+                                    <li>Loads the processed logo with transparent background</li>
+                                    <li>Extracts up to 20 dominant colors from the logo itself</li>
+                                    <li>Tests each color for contrast against the logo</li>
+                                    <li>Filters to colors that would work as backgrounds</li>
+                                    <li>Combines with colors from Step 1 for final palette</li>
+                                </ul>
+                                <p><strong>Result:</strong></p>
+                                <ul>
+                                    <li>Additional color options extracted directly from the logo</li>
+                                    <li>Combined with Step 1 colors for comprehensive palette</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="automation-section">
+                            <h3 class="automation-step-title">Step 3: Background Detection (Custom Algorithm)</h3>
+                            <div class="automation-step-content">
+                                <p><strong>What happens:</strong> Tries to figure out what the original background color was</p>
+                                <p><strong>API:</strong> None - runs in your browser using Canvas</p>
+                                <p><strong>Process:</strong></p>
+                                <ul>
+                                    <li>Samples 8 points around the edges (4 corners + 4 midpoints)</li>
+                                    <li>Counts which color appears most often</li>
+                                    <li>If 50% or more of edges are the same color, that is probably the background</li>
+                                    <li>Calculates confidence score (how sure we are)</li>
+                                </ul>
+                                <p><strong>Result:</strong></p>
+                                <ul>
+                                    <li>Either finds original background color OR says "not sure"</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="automation-section">
+                            <h3 class="automation-step-title">Step 4: Background Removal (Remove.bg API)</h3>
+                            <div class="automation-step-content">
+                                <p><strong>What happens:</strong> Removes the background from your logo</p>
+                                <p><strong>API:</strong> Remove.bg (cloud service, uses 1 credit per image)</p>
+                                <p><strong>Process:</strong></p>
+                                <ul>
+                                    <li>Sends your image to remove.bg servers</li>
+                                    <li>Their AI identifies what is logo vs background</li>
+                                    <li>Removes everything that's not the logo</li>
+                                    <li>Also does these at the same time:
+                                        <ul>
+                                            <li>Crops to just the logo area</li>
+                                            <li>Adds 15% margin around it</li>
+                                            <li>Centers it perfectly</li>
+                                            <li>Scales it to fill the frame nicely</li>
+                                        </ul>
+                                    </li>
+                                    <li>Sends back a PNG with transparent background</li>
+                                </ul>
+                                <p><strong>API Response Headers:</strong></p>
+                                <ul>
+                                    <li>X-Credits-Charged: How many credits this used (always 1)</li>
+                                    <li>X-RateLimit-Remaining: How many credits you have left</li>
+                                    <li>X-RateLimit-Limit: Your total credits (50 for free tier)</li>
+                                </ul>
+                                <p><strong>Result:</strong></p>
+                                <ul>
+                                    <li>Logo with transparent background, cropped and centered</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="automation-section">
+                            <h3 class="automation-step-title">Step 5: Logo Brightness Analysis (Custom Algorithm)</h3>
+                            <div class="automation-step-content">
+                                <p><strong>What happens:</strong> Figures out if your logo is light or dark</p>
+                                <p><strong>API:</strong> None - runs in your browser using Canvas</p>
+                                <p><strong>Process:</strong></p>
+                                <ul>
+                                    <li>Loads the processed logo (background already removed)</li>
+                                    <li>Looks at every pixel that's NOT transparent</li>
+                                    <li>Calculates brightness using human perception formula:
+                                        <ul>
+                                            <li>brightness = (0.299 × red) + (0.587 × green) + (0.114 × blue)</li>
+                                        </ul>
+                                    </li>
+                                    <li>Averages all the pixel brightnesses</li>
+                                    <li>Gets a number from 0 (black) to 255 (white)</li>
+                                </ul>
+                                <p><strong>Result:</strong></p>
+                                <ul>
+                                    <li>Average brightness score for the logo</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="automation-section">
+                            <h3 class="automation-step-title">Step 6: Smart Default Background Selection (Custom Algorithm)</h3>
+                            <div class="automation-step-content">
+                                <p><strong>What happens:</strong> Picks the best background color automatically</p>
+                                <p><strong>API:</strong> None - uses results from Steps 3 and 5</p>
+                                <p><strong>Logic:</strong></p>
+                                <p><strong>Option A: Use Original Background (Preferred)</strong></p>
+                                <ul>
+                                    <li>Did we detect a background in Step 2? ✓</li>
+                                    <li>Is confidence > 60%? ✓</li>
+                                    <li>Is the detected color in the ColorThief palette?
+                                        <ul>
+                                            <li>→ Use it immediately (strong signal it's correct)</li>
+                                        </ul>
+                                    </li>
+                                    <li>Otherwise, check brightness difference between logo and background
+                                        <ul>
+                                            <li>If difference ≥ 30: Use detected background (good contrast)</li>
+                                            <li>If difference < 30: Too similar, use opposite (white or black)</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <p><strong>Option B: Use Logo Brightness</strong></p>
+                                <ul>
+                                    <li>Original background failed OR wasn't detected</li>
+                                    <li>Is logo dark (brightness < 128)?
+                                        <ul>
+                                            <li>→ Use white background</li>
+                                        </ul>
+                                    </li>
+                                    <li>Is logo light (brightness > 128)?
+                                        <ul>
+                                            <li>→ Use black background</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <p><strong>Result:</strong></p>
+                                <ul>
+                                    <li>One "smart" default background color</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="automation-section">
+                            <h3 class="automation-step-title">Step 7: Adaptive Outline System (WCAG AA 3:1 Compliant)</h3>
+                            <div class="automation-step-content">
+                                <p><strong>What happens:</strong> The card outline automatically adjusts color and opacity based on the background's luminance value to ensure optimal visibility</p>
+                                <p><strong>Why it matters:</strong></p>
+                                <ul>
+                                    <li>WCAG compliance: Follows non-text contrast standards (AA 3:1 ratio)</li>
+                                    <li>Adaptive visibility: Outline strength increases on extreme light/dark backgrounds</li>
+                                    <li>Smart switching: Uses white outline on dark cards, black outline on light cards</li>
+                                    <li>Mid-tone intelligence: Calculates which color (black or white) provides better contrast</li>
+                                </ul>
+                                <p><strong>Luminance-based rules:</strong></p>
+                                <ul>
+                                    <li>Very dark/black (0.00-0.18): White outline at 45% opacity</li>
+                                    <li>Dark (0.18-0.35): White outline at 35% opacity</li>
+                                    <li>Medium (0.35-0.65): Higher contrast of black or white at 25% opacity</li>
+                                    <li>Light (0.65-0.82): Black outline at 35% opacity</li>
+                                    <li>Very light/white (0.82-1.00): Black outline at 50% opacity</li>
+                                </ul>
+                                <p><strong>Technical implementation:</strong></p>
+                                <ul>
+                                    <li>Calculates relative luminance using WCAG formula: 0.2126*R + 0.7152*G + 0.0722*B</li>
+                                    <li>Dynamically applies outline when background color changes</li>
+                                    <li>Smooth transitions (0.2s ease) when switching colors</li>
+                                    <li>Scales proportionally in lightbox (0.5px → 0.7px at 140%)</li>
+                                </ul>
+                                <p><strong>Result:</strong></p>
+                                <ul>
+                                    <li>Perfect visibility across all background colors</li>
+                                    <li>Accessibility-first design meeting WCAG standards</li>
+                                    <li>Automatic adjustment - no manual configuration needed</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="automation-section">
+                            <h3 class="automation-step-title">Summary of APIs Used</h3>
+                            <div class="automation-step-content">
+                                <table class="automation-table">
+                                    <thead>
+                                        <tr>
+                                            <th>API</th>
+                                            <th>Purpose</th>
+                                            <th>Where It Runs</th>
+                                            <th>Cost</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>ColorThief</td>
+                                            <td>Extract 5 colors from image</td>
+                                            <td>Your browser (free)</td>
+                                            <td>Free</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Canvas API</td>
+                                            <td>Detect background & analyze brightness</td>
+                                            <td>Your browser (built-in)</td>
+                                            <td>Free</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Remove.bg</td>
+                                            <td>Remove background + crop + center</td>
+                                            <td>Cloud server</td>
+                                            <td>1 credit/image</td>
+                                        </tr>
+                                        <tr>
+                                            <td>WCAG Contrast</td>
+                                            <td>Check if colors are legible</td>
+                                            <td>Your browser (formula)</td>
+                                            <td>Free</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p><strong>Total Credits Per Image: 1</strong></p>
+                                <p>Everything except background removal happens in your browser for free. Only remove.bg uses API credits!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="automation-credits">
+                            <p class="automation-version">Version 1.0</p>
+                            <p class="automation-designer">Designed by @mpringle</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Automation Logic View -->
+                
+                <!-- Settings View -->
+                <div class="view-container" id="settingsView">
+                    <div class="settings-content">
+                        <h2 class="settings-title">Settings</h2>
+                        
+                        <div class="settings-section">
+                            <label class="settings-label" for="settingsNameInput">Your name</label>
+                            <p class="settings-description">This appears next to the seller cards you create.</p>
+                            <div class="settings-input-row">
+                                <input 
+                                    type="text" 
+                                    class="settings-input" 
+                                    id="settingsNameInput"
+                                    placeholder="Enter your name"
+                                />
+                                <button class="settings-save-btn" id="settingsSaveBtn">Save</button>
+                            </div>
+                            <p class="settings-confirmation" id="settingsConfirmation"></p>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Settings View -->
+                
+                <!-- Processing Results View -->
+                <div class="view-container" id="processingResultsView">
+                    <div class="processing-results-container">
+                        <!-- Batches will be rendered here dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Upload More Button (fixed position) -->
+                <button class="upload-more-btn" id="uploadMoreBtn" style="display: none;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 3.5V12.5M3.5 8H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lightbox -->
+    <div class="lightbox-overlay" id="lightboxOverlay">
+        <button class="lightbox-close" id="lightboxClose">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+        <div class="lightbox-content">
+            <img class="lightbox-image" id="lightboxImage" src="" alt="Enlarged view">
+        </div>
+    </div>
+    
+    <!-- Seller Card Lightbox (with background color) -->
+    <div class="seller-card-lightbox-overlay" id="sellerCardLightboxOverlay">
+        <button class="lightbox-close" id="sellerCardLightboxClose">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+        <div class="seller-card-lightbox-content" id="sellerCardLightboxContent">
+            <img class="seller-card-lightbox-image" id="sellerCardLightboxImage" src="" alt="Enlarged seller card">
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="saveToast">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M13.3333 4L6 11.3333L2.66667 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Changes saved</span>
+    </div>
+
+    <!-- Color Picker Popup (from Seller Card Specs) -->
+    <div class="color-picker-overlay" id="colorPickerOverlay">
+        <div class="color-picker-popup" id="colorPickerPopup">
+            <div class="color-picker">
+                <!-- RGB Color Field -->
+                <div class="color-field">
+                    <div class="color-gradient" id="colorGradient">
+                        <div class="color-picker-handle" id="colorHandle"></div>
+                    </div>
+                </div>
+                
+                <!-- Hue Slider -->
+                <div class="slider-container">
+                    <div class="slider hue-slider" id="hueSlider">
+                        <div class="slider-handle" id="hueHandle"></div>
+                    </div>
+                </div>
+                
+                <!-- Opacity Slider -->
+                <div class="slider-container">
+                    <div class="slider value-slider" id="valueSlider">
+                        <div class="slider-handle" id="valueHandle"></div>
+                    </div>
+                </div>
+                
+                <!-- Hex Input and Opacity -->
+                <div class="color-pill">
+                    <div class="color-dot" id="colorPickerColorDot"></div>
+                    <span class="hex-value" id="colorPickerHexValue">#B44E0E</span>
+                    <div class="pill-divider"></div>
+                    <span class="opacity-value" id="colorPickerOpacityValue">100%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

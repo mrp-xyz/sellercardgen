@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Credit Usage</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: white; }
+        h1 { color: #00ff00; }
+        .batch { background: #2a2a2a; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .total { background: #00ff00; color: #000; padding: 20px; margin: 20px 0; border-radius: 8px; font-size: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>remove.bg Credit Usage</h1>
+    <div id="output"></div>
+    
+    <script>
+        const stored = localStorage.getItem('processingBatches');
+        const output = document.getElementById('output');
+        
+        if (stored) {
+            try {
+                const batches = JSON.parse(stored);
+                let totalCredits = 0;
+                let batchInfo = '';
+                
+                batches.forEach((batch, i) => {
+                    const date = new Date(batch.timestamp);
+                    const credits = batch.creditsUsed || 0;
+                    totalCredits += credits;
+                    
+                    batchInfo += `
+                        <div class="batch">
+                            <strong>Batch ${i + 1}</strong><br>
+                            Date: ${date.toLocaleString()}<br>
+                            Credits used: ${credits}<br>
+                            Logos processed: ${batch.processed?.length || 0}<br>
+                            Credits remaining after: ${batch.creditsRemaining || 'N/A'}
+                        </div>
+                    `;
+                });
+                
+                output.innerHTML = `
+                    <div class="total">
+                        TOTAL CREDITS USED: ${totalCredits}
+                    </div>
+                    ${batchInfo}
+                    <div style="margin-top: 20px; color: #888;">
+                        API Key: CEJ8TU3u3GHnjoLVidQtGCos
+                    </div>
+                `;
+            } catch (e) {
+                output.innerHTML = `<div style="color: red;">Error: ${e.message}</div>`;
+            }
+        } else {
+            output.innerHTML = '<div>No batches found - no credits used yet</div>';
+        }
+    </script>
+</body>
+</html>

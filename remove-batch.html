@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Remove Batch</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            padding: 40px; 
+            background: #000; 
+            color: #fff; 
+        }
+        button {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover { background: #ddd; }
+        .success { color: #0f0; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Remove Bad Batch</h1>
+    <p>This will remove the batch from Nov 25 2025 at 1:43 PM</p>
+    <button onclick="removeBatch()">Remove This Batch</button>
+    <div id="result"></div>
+
+    <script>
+        function removeBatch() {
+            try {
+                const stored = localStorage.getItem('processingBatches');
+                if (!stored) {
+                    document.getElementById('result').innerHTML = '<p>No batches found</p>';
+                    return;
+                }
+                
+                let batches = JSON.parse(stored);
+                const originalLength = batches.length;
+                
+                // Remove the batch from Nov 25 at 1:43 PM
+                batches = batches.filter(batch => {
+                    const timestamp = new Date(batch.timestamp);
+                    const timeStr = timestamp.toLocaleString();
+                    // Filter out the specific batch
+                    return !timeStr.includes('Nov 25') || !timeStr.includes('1:43');
+                });
+                
+                // Save back
+                localStorage.setItem('processingBatches', JSON.stringify(batches));
+                
+                document.getElementById('result').innerHTML = 
+                    `<p class="success">✓ Removed ${originalLength - batches.length} batch(es). ${batches.length} remaining.</p>
+                     <p>Close this page and refresh the main app.</p>`;
+                
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
+
+

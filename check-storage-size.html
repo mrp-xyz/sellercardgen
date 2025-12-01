@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Storage Size Check</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: white; }
+        h1 { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffaa00; }
+        .success { color: #00ff00; }
+    </style>
+</head>
+<body>
+    <h1>localStorage Size Analysis</h1>
+    <div id="output"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        
+        try {
+            const stored = localStorage.getItem('processingBatches');
+            
+            if (!stored) {
+                output.innerHTML = '<p class="error">No batches found in localStorage</p>';
+            } else {
+                const sizeInBytes = new Blob([stored]).size;
+                const sizeInKB = (sizeInBytes / 1024).toFixed(2);
+                const sizeInMB = (sizeInBytes / (1024 * 1024)).toFixed(2);
+                
+                const batches = JSON.parse(stored);
+                
+                let html = `
+                    <h2>Storage Size</h2>
+                    <p><strong>Total Size:</strong> ${sizeInKB} KB (${sizeInMB} MB)</p>
+                    <p><strong>Batches:</strong> ${batches.length}</p>
+                    <p><strong>Limit:</strong> ~5-10 MB (browser dependent)</p>
+                    <br>
+                `;
+                
+                if (sizeInMB > 5) {
+                    html += '<p class="error">⚠️ WARNING: Storage is very large! May cause issues.</p>';
+                } else if (sizeInMB > 2) {
+                    html += '<p class="warning">⚠️ Storage is getting large.</p>';
+                } else {
+                    html += '<p class="success">✓ Storage size is OK</p>';
+                }
+                
+                html += '<h2>Batch Details</h2>';
+                
+                batches.forEach((batch, i) => {
+                    const batchSize = new Blob([JSON.stringify(batch)]).size;
+                    const batchKB = (batchSize / 1024).toFixed(2);
+                    
+                    html += `
+                        <div style="background: #2a2a2a; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                            <strong>Batch ${i + 1}</strong><br>
+                            Size: ${batchKB} KB<br>
+                            Logos: ${batch.processed?.length || 0}<br>
+                            Timestamp: ${new Date(batch.timestamp).toLocaleString()}<br>
+                            Has Images: ${batch.processed?.every(p => p.processedUrl && p.processedUrl.startsWith('data:')) ? '✓' : '✗'}
+                        </div>
+                    `;
+                });
+                
+                output.innerHTML = html;
+            }
+        } catch (error) {
+            output.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Failed Batches</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: white; }
+        h1 { color: #00ff00; }
+        button { padding: 15px 30px; font-size: 16px; margin: 10px; cursor: pointer; }
+        .clear-btn { background: #ff0000; color: white; border: none; border-radius: 5px; }
+        .clear-btn:hover { background: #cc0000; }
+        #output { margin-top: 20px; }
+        .batch { background: #2a2a2a; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .has-images { border-left: 5px solid #00ff00; }
+        .no-images { border-left: 5px solid #ff0000; }
+    </style>
+</head>
+<body>
+    <h1>Clear Failed Batches</h1>
+    <p>This will remove all batches that don't have images (failed due to API credit issues)</p>
+    
+    <button class="clear-btn" onclick="clearFailedBatches()">Clear Failed Batches</button>
+    <button onclick="showBatches()">Refresh View</button>
+    
+    <div id="output"></div>
+    
+    <script>
+        function showBatches() {
+            const output = document.getElementById('output');
+            const stored = localStorage.getItem('processingBatches');
+            
+            if (!stored) {
+                output.innerHTML = '<p>No batches found</p>';
+                return;
+            }
+            
+            const batches = JSON.parse(stored);
+            let html = `<h2>Current Batches: ${batches.length}</h2>`;
+            
+            batches.forEach((batch, i) => {
+                const hasImages = batch.processed?.every(p => p.processedUrl && p.processedUrl.startsWith('data:'));
+                const className = hasImages ? 'has-images' : 'no-images';
+                const status = hasImages ? '✓ HAS IMAGES' : '✗ NO IMAGES (FAILED)';
+                
+                html += `
+                    <div class="batch ${className}">
+                        <strong>Batch ${i + 1}</strong> - ${status}<br>
+                        Date: ${new Date(batch.timestamp).toLocaleString()}<br>
+                        Logos: ${batch.processed?.length || 0}
+                    </div>
+                `;
+            });
+            
+            output.innerHTML = html;
+        }
+        
+        function clearFailedBatches() {
+            const stored = localStorage.getItem('processingBatches');
+            
+            if (!stored) {
+                alert('No batches found');
+                return;
+            }
+            
+            const batches = JSON.parse(stored);
+            const originalCount = batches.length;
+            
+            // Keep only batches that have images
+            const cleanBatches = batches.filter(batch => {
+                return batch.processed?.every(p => p.processedUrl && p.processedUrl.startsWith('data:'));
+            });
+            
+            const removedCount = originalCount - cleanBatches.length;
+            
+            if (removedCount === 0) {
+                alert('No failed batches found!');
+                showBatches();
+                return;
+            }
+            
+            // Save cleaned batches
+            localStorage.setItem('processingBatches', JSON.stringify(cleanBatches));
+            
+            alert(`✓ Removed ${removedCount} failed batch${removedCount > 1 ? 'es' : ''}!\nKept ${cleanBatches.length} batch${cleanBatches.length !== 1 ? 'es' : ''} with images.`);
+            showBatches();
+        }
+        
+        // Show on load
+        showBatches();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Storage Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: white; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        pre { background: #2a2a2a; padding: 20px; border-radius: 8px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>localStorage Debug</h1>
+    <button onclick="checkStorage()">Check Storage</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+    <div id="output"></div>
+    
+    <script>
+        function checkStorage() {
+            const stored = localStorage.getItem('processingBatches');
+            const output = document.getElementById('output');
+            
+            if (stored) {
+                try {
+                    const batches = JSON.parse(stored);
+                    output.innerHTML = `
+                        <h2>Found ${batches.length} batches in localStorage</h2>
+                        <pre>${JSON.stringify(batches, null, 2)}</pre>
+                    `;
+                } catch (e) {
+                    output.innerHTML = `<h2 style="color: red;">Error parsing: ${e.message}</h2>`;
+                }
+            } else {
+                output.innerHTML = '<h2>No batches found in localStorage</h2>';
+            }
+        }
+        
+        function clearStorage() {
+            localStorage.removeItem('processingBatches');
+            alert('Storage cleared!');
+            checkStorage();
+        }
+        
+        checkStorage();
+    </script>
+</body>
+</html>
+

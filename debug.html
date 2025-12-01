@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug localStorage</title>
+</head>
+<body>
+    <h1>Processing Batches Debug</h1>
+    <button onclick="showBatches()">Show Batches</button>
+    <button onclick="clearBatches()">Clear All Batches</button>
+    <pre id="output"></pre>
+    
+    <script>
+        function showBatches() {
+            const stored = localStorage.getItem('processingBatches');
+            const output = document.getElementById('output');
+            if (stored) {
+                const batches = JSON.parse(stored);
+                output.textContent = `Found ${batches.length} batches:\n\n` + JSON.stringify(batches, null, 2);
+            } else {
+                output.textContent = 'No batches found in localStorage';
+            }
+        }
+        
+        function clearBatches() {
+            localStorage.removeItem('processingBatches');
+            document.getElementById('output').textContent = 'Cleared all batches';
+        }
+        
+        // Auto-show on load
+        showBatches();
+    </script>
+</body>
+</html>

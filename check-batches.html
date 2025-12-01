@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Batches</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 40px;
+            background: #000;
+            color: #fff;
+        }
+        .batch {
+            background: #1a1a1a;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .logo-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            background: #333;
+            border-radius: 4px;
+            margin: 5px;
+        }
+        .logos {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Processing Batches in localStorage</h1>
+    <button onclick="loadBatches()">Refresh</button>
+    <button onclick="clearStorage()">Clear All</button>
+    <div id="output"></div>
+
+    <script>
+        function loadBatches() {
+            const stored = localStorage.getItem('processingBatches');
+            const output = document.getElementById('output');
+            
+            if (!stored) {
+                output.innerHTML = '<p>No batches found in localStorage</p>';
+                return;
+            }
+            
+            try {
+                const batches = JSON.parse(stored);
+                console.log('Batches:', batches);
+                
+                let html = `<p><strong>Total batches:</strong> ${batches.length}</p>`;
+                
+                batches.forEach((batch, i) => {
+                    const timestamp = new Date(batch.timestamp).toLocaleString();
+                    const logoCount = batch.processed?.length || 0;
+                    const userName = batch.userName || 'Unknown';
+                    
+                    html += `
+                        <div class="batch">
+                            <h2>Batch ${i + 1}</h2>
+                            <p><strong>Timestamp:</strong> ${timestamp}</p>
+                            <p><strong>User:</strong> ${userName}</p>
+                            <p><strong>Logos:</strong> ${logoCount}</p>
+                            <p><strong>Credits Used:</strong> ${batch.creditsUsed || 0}</p>
+                            <p><strong>Credits Remaining:</strong> ${batch.creditsRemaining || 'N/A'}</p>
+                            <div class="logos">
+                    `;
+                    
+                    if (batch.processed) {
+                        batch.processed.forEach((logo, j) => {
+                            if (logo.failed) {
+                                html += `<div style="width: 100px; height: 100px; background: #500; margin: 5px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; text-align: center; padding: 5px;">Failed: ${logo.failureReason}</div>`;
+                            } else if (logo.processedUrl) {
+                                html += `<img src="${logo.processedUrl}" class="logo-preview" alt="Logo ${j + 1}">`;
+                            }
+                        });
+                    }
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                output.innerHTML = html;
+            } catch (error) {
+                output.innerHTML = `<p style="color: red;">Error parsing batches: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+        
+        function clearStorage() {
+            if (confirm('Clear all batches from localStorage?')) {
+                localStorage.removeItem('processingBatches');
+                loadBatches();
+            }
+        }
+        
+        // Load on page load
+        loadBatches();
+    </script>
+</body>
+</html>
+
+
