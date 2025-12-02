@@ -22,15 +22,29 @@ Automated seller card generator for Block's Cash App Neighborhoods ecosystem. Co
 
 1. **Clone this repository**
    ```bash
-   git clone <repository-url>
-   cd brand-admin
+   git clone https://github.com/mrp-xyz/sellercardgen.git
+   cd sellercardgen
    ```
 
 2. **Configure API Key**
-   - Open `config.js`
-   - Replace `'YOUR_REMOVE_BG_API_KEY'` with your actual API key
+   
+   ⚠️ **IMPORTANT**: Never commit your API key to git!
+   
+   - Copy the template file:
+     ```bash
+     cp config.template.js config.js
+     ```
+   - Open `config.js` in a text editor
+   - Replace `'YOUR_REMOVE_BG_API_KEY_HERE'` with your actual API key
+   - Get a free API key at: https://www.remove.bg/api
+   
    ```javascript
-   const REMOVE_BG_API_KEY = 'your-actual-api-key-here';
+   const API_CONFIG = {
+       removeBg: {
+           apiKey: 'your-actual-api-key-here',
+           // ...
+       }
+   };
    ```
 
 3. **Open in Browser**
@@ -38,6 +52,10 @@ Automated seller card generator for Block's Cash App Neighborhoods ecosystem. Co
    open index.html
    ```
    Or simply double-click `index.html` in Finder
+
+### 🔒 Security Note
+
+The `config.js` file is gitignored to protect your API key. Each developer needs to create their own `config.js` from the template.
 
 ### First Use
 

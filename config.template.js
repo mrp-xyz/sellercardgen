@@ -4,9 +4,10 @@
 
 const API_CONFIG = {
     removeBg: {
-        apiKey: 'phmT66okBvFDcxrR4xsNhSiz',
+        apiKey: 'YOUR_REMOVE_BG_API_KEY_HERE',
         endpoint: 'https://api.remove.bg/v1.0/removebg',
         // Free tier: 50 calls/month
+        // Get your API key: https://www.remove.bg/api
         // Paid plans: https://www.remove.bg/pricing
     }
 };

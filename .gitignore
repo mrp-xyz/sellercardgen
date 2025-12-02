@@ -5,6 +5,9 @@ node_modules/
 .env
 .env.local
 
+# API Keys (IMPORTANT: Keep config.js private!)
+config.js
+
 # OS files
 .DS_Store
 Thumbs.db
